@@ -11,6 +11,7 @@ import java.io.*;
 public class Review {
   
   private static HashMap<String, Double> sentiment = new HashMap<String, Double>();
+  //hashmap = 
   private static ArrayList<String> posAdjectives = new ArrayList<String>();
   private static ArrayList<String> negAdjectives = new ArrayList<String>();
  
@@ -37,7 +38,7 @@ public class Review {
       Scanner input = new Scanner(new File("src//positiveAdjectives.txt"));
       while(input.hasNextLine()){
         String temp = input.nextLine().trim();
-        System.out.println(temp);
+        //System.out.println(temp);
         posAdjectives.add(temp);
       }
       input.close();
@@ -133,18 +134,43 @@ public class Review {
     return negAdjectives.get(index);
     
   }
+ /* 
+  public static String randomPositiveAdj()
+  {
+    int index = (int)(Math.random() * posAdjectives.size());
+    return posAdjectives.get(index);
+  }
+  
+  /** 
+   * Randomly picks a negative adjective from the negativeAdjectives.txt file and returns it.
+   
+  public static String randomNegativeAdj()
+  {
+    int index = (int)(Math.random() * negAdjectives.size());
+    return negAdjectives.get(index);
+    
+  }
   
   /** 
    * Randomly picks a positive or negative adjective and returns it.
    */
-  public static String randomAdjective()
+  public static String randomAdjective(String word)
   {
-    boolean positive = Math.random() < .5;
+    /*boolean positive = Math.random() < .5;
     if(positive){
       return randomPositiveAdj();
     } else {
       return randomNegativeAdj();
     }
+    */
+	 //
+	  double value = sentimentVal(word);
+	  if (value < 0) {
+		  return randomPositiveAdj();  
+	  }else {
+	      return randomNegativeAdj();
+	    }
+	    //
   }
 
 /** Activity 2: totalSentiment()
@@ -154,19 +180,24 @@ public class Review {
   public static double totalSentiment(String filename)
   {
     // read in the file contents into a string using the textToString method with the filename
-
+	  String text = textToString(filename);
+	  
     // set up a sentimentTotal variable
-
+	  double sentimentTotal = 0.0;
+	  
     // loop through the file contents 
-
+	  
+	  String[] words = text.split(" ");
+	    
+	  for (int i = 0; i < words.length; i++) {
+	  
        // find each word
+		  double value = sentimentVal(words[i]);
        // add in its sentimentVal
-       // set the file contents to start after this word
-   
-   
-
-
-	  return 0;
+		  sentimentTotal += value;
+       
+	  }
+	  return sentimentTotal;
    //return sentimentTotal; 
   }
 
@@ -181,11 +212,61 @@ public class Review {
     // determine number of stars between 0 and 4 based on totalSentiment value 
     int stars = -1;
     // write if statements here
-
+    double rating = Review.totalSentiment("src/SimpleReview.txt");
 
   
     // return number of stars
-    return stars; 
+    if (rating <= -3) {
+    	stars = 0;
+  }else if (rating <= -1) {
+    	stars = 1;
+  } else if (rating <= 2) {
+    	stars = 2;
+  }else if (rating <= 5) {
+  		stars = 3;
+  } else if (rating <= 7) {
+    	stars = 4;
+  }else {
+    	stars = 5;
   }
+   System.out.println(stars);
+    
+   return stars; 
+  
+  }
+  
+  public static String fakeReview(String filename) {
+	  String review = "";
+	  
+	  //read in our file into a string (simple review.txt)
+	  review = textToString(filename);
+	  
+	  //if word starts with asterix, replace
+	  String [] words = review.split(" ");
+	  
+	  for (int i = 0; i< words.length; i++) {
+		  if (words[i].charAt(0) =='*') {
+			  int length = words[i].length();
+			  if(words[i].charAt(length - 1) == ',') {
+				 words[i] = randomAdjective(words[i]) + ","; 
+				
+			  }else {
+				  words[i] = randomAdjective(words[i]);
+			  }
+			  
+			
+		  }
+	  }
+	  //reassemble into "review" - one continuous string
+	  review = "";
+	  for(int i = 0; i<words.length; i++) {
+		  review += words[i] + " ";
+	  }
+	  //make sure it has spaces
+	 
+	  
+	  return review;
+  }
+ 
   
 }
